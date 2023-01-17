@@ -12,6 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -45,17 +46,22 @@ class SendLocationWorker @AssistedInject constructor(
         val notifyIntent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
-        val notifyPendingIntent = PendingIntent.getActivity(
-            context, 0, notifyIntent,
+        val openIntent = PendingIntent.getActivity(
+            context,
+            0,
+            notifyIntent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+        val closeIntent = WorkManager.getInstance(applicationContext).createCancelPendingIntent(id)
         val notification = NotificationCompat.Builder(applicationContext, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle("Content title")
             .setTicker("Ticker")
             .setContentText("Content text")
             .setOngoing(true)
-            .addAction(R.drawable.ic_launcher_background, "Open", notifyPendingIntent)
+            .addAction(R.drawable.ic_launcher_background, "Open", openIntent)
+            .addAction(R.drawable.ic_launcher_background, "Close", closeIntent)
             .build()
 
         return ForegroundInfo(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_LOCATION)
