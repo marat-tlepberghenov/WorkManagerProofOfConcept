@@ -12,9 +12,7 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.ForegroundInfo
-import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import androidx.work.await
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,11 +27,11 @@ class SendLocationWorker @AssistedInject constructor(
     private val repository: LocationRepository,
 ) : CoroutineWorker(context, params) {
 
-    override suspend fun doWork(): Result = withContext(DispatcherIo) {
+    override suspend fun doWork(): Result = withContext(DISPATCHER_IO) {
         setForeground(createForegroundInfo())
         while (true) {
             sendLocation(repository.getLocation())
-            delay(Delay)
+            delay(DELAY)
         }
         Result.retry()
     }
@@ -73,7 +71,7 @@ class SendLocationWorker @AssistedInject constructor(
         const val NAME = "SendLocationWorker"
         private const val NOTIFICATION_ID = 123
         private const val CHANNEL_ID = "channelId"
-        private val DispatcherIo: CoroutineDispatcher = Dispatchers.IO
-        private const val Delay: Long = 3_000L
+        private val DISPATCHER_IO: CoroutineDispatcher = Dispatchers.IO
+        private const val DELAY: Long = 3_000L
     }
 }

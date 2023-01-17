@@ -5,7 +5,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +25,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startSendLocationWork() {
+        //Need verify if a work with name [ SendLocationWorker.NAME] is running.
+        //If true
         WorkManager.getInstance(this).enqueueUniqueWork(
             SendLocationWorker.NAME,
             ExistingWorkPolicy.REPLACE,
